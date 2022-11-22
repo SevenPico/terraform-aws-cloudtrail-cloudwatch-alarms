@@ -1,30 +1,31 @@
 data "aws_caller_identity" "default" {}
 
 module "sns_kms_key_label" {
-  source  = "cloudposse/label/null"
-  version = "0.25.0"
-  count   = local.create_kms_key ? 1 : 0
+  source  = "app.terraform.io/SevenPico/context/null"
+  version = "1.0.2"
+  count   = var.create_kms_key ? 1 : 0
 
   attributes = ["sns"]
-  context    = module.this.context
+  context    = module.context.self
 }
 
 module "sns_kms_key" {
-  source  = "cloudposse/kms-key/aws"
-  version = "0.10.0"
-  count   = local.create_kms_key ? 1 : 0
+  source  = "app.terraform.io/SevenPico/kms-key/aws"
+  version = "0.12.1"
+  count   = var.create_kms_key ? 1 : 0
+  context = module.context.self
 
   name                = local.create_kms_key ? module.sns_kms_key_label[0].id : ""
   description         = "KMS key for the ${local.alert_for} SNS topic"
   enable_key_rotation = true
   alias               = "alias/${local.alert_for}-sns"
-  policy              = local.create_kms_key ? data.aws_iam_policy_document.sns_kms_key_policy[0].json : ""
+  policy              = var.create_kms_key ? data.aws_iam_policy_document.sns_kms_key_policy[0].json : ""
 
-  context = module.this.context
+
 }
 
 data "aws_iam_policy_document" "sns_kms_key_policy" {
-  count = local.create_kms_key ? 1 : 0
+  count = var.create_kms_key ? 1 : 0
 
   policy_id = "CloudWatchEncryptUsingKey"
 
@@ -57,17 +58,17 @@ data "aws_iam_policy_document" "sns_kms_key_policy" {
 }
 
 module "aws_sns_topic_label" {
-  source  = "cloudposse/label/null"
-  version = "0.25.0"
+  source  = "app.terraform.io/SevenPico/context/null"
+  version = "1.0.2"
 
   attributes = ["cloudtrail-breach"]
-  context    = module.this.context
+  context    = module.context.self
 }
 
 resource "aws_sns_topic" "default" {
   count             = local.enabled ? 1 : 0
   name              = module.aws_sns_topic_label.id
-  tags              = module.this.tags
+  tags              = module.context.tags
   kms_master_key_id = local.create_kms_key ? module.sns_kms_key[0].key_id : var.kms_master_key_id
 }
 
@@ -131,7 +132,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
 }
 
 locals {
-  enabled            = module.this.enabled
-  create_kms_key     = local.enabled && var.kms_master_key_id == null
+  enabled            = module.context.enabled
+  create_kms_key     = var.create_kms_key && var.kms_master_key_id == null
   metric_alarms_arns = [for i in aws_cloudwatch_metric_alarm.default : i.arn]
 }
