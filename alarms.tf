@@ -39,12 +39,12 @@ resource "aws_cloudwatch_metric_alarm" "default" {
   threshold           = each.value.alarm_threshold
   alarm_description   = each.value.alarm_description
   alarm_actions       = local.endpoints
-  tags                = module.this.tags
+  tags                = module.context.tags
 }
 
 resource "aws_cloudwatch_dashboard" "combined" {
   count          = local.enabled && var.dashboard_enabled ? 1 : 0
-  dashboard_name = join(module.this.delimiter, ["cis", "benchmark", "statistics", "combined"])
+  dashboard_name = join(module.context.delimiter, ["cis", "benchmark", "statistics", "combined"])
   # https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Dashboard-Body-Structure.html#CloudWatch-Dashboard-Properties-Metrics-Array-Format
   dashboard_body = jsonencode({
     widgets = [
@@ -78,7 +78,7 @@ locals {
 
 resource "aws_cloudwatch_dashboard" "individual" {
   count          = local.enabled && var.dashboard_enabled ? 1 : 0
-  dashboard_name = join(module.this.delimiter, ["cis", "benchmark", "statistics", "individual"])
+  dashboard_name = join(module.context.delimiter, ["cis", "benchmark", "statistics", "individual"])
 
   dashboard_body = jsonencode({
     widgets = [
