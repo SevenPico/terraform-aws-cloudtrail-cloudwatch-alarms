@@ -15,6 +15,11 @@ variable "sns_topic_arn" {
   type        = string
 }
 
+variable "sns_topic_enabled" {
+   type        = bool
+   default     = false
+}
+
 variable "sns_policy_enabled" {
   description = "Attach a policy that allows the notifications through to the SNS topic endpoint"
   default     = false
@@ -72,4 +77,8 @@ variable "metrics" {
   }))
   default     = {}
   description = "The cloudwatch metrics and corresponding alarm definitions"
+}
+
+variable "dashboard_name" {
+  type = string
 }

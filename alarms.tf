@@ -11,6 +11,7 @@ locals {
   metric_namespace = var.metric_namespace
   metric_value     = "1"
   metrics_index    = values(var.metrics)
+  dashboard_name   = var.dashboard_name != null && var.dashboard_name != "" ? var.dashboard_name : module.context.id
 }
 
 resource "aws_cloudwatch_log_metric_filter" "default" {
@@ -44,7 +45,7 @@ resource "aws_cloudwatch_metric_alarm" "default" {
 
 resource "aws_cloudwatch_dashboard" "combined" {
   count          = local.enabled && var.dashboard_enabled ? 1 : 0
-  dashboard_name = join(module.context.delimiter, ["cis", "benchmark", "statistics", "combined"])
+  dashboard_name = join(module.context.delimiter,  ["${local.dashboard_name}", "combined"])
   # https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Dashboard-Body-Structure.html#CloudWatch-Dashboard-Properties-Metrics-Array-Format
   dashboard_body = jsonencode({
     widgets = [
@@ -78,7 +79,7 @@ locals {
 
 resource "aws_cloudwatch_dashboard" "individual" {
   count          = local.enabled && var.dashboard_enabled ? 1 : 0
-  dashboard_name = join(module.context.delimiter, ["cis", "benchmark", "statistics", "individual"])
+  dashboard_name = join(module.context.delimiter,  ["${local.dashboard_name}", "individual"])
 
   dashboard_body = jsonencode({
     widgets = [
