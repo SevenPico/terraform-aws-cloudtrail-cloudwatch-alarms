@@ -42,9 +42,15 @@ resource "aws_cloudwatch_metric_alarm" "default" {
   tags                = module.context.tags
 }
 
+module "aws_cloudwatch_dashboard_label" {
+  source  = "app.terraform.io/SevenPico/context/null"
+  version = "1.0.2"
+  context = module.context.self
+}
+
 resource "aws_cloudwatch_dashboard" "combined" {
   count          = local.enabled && var.dashboard_enabled ? 1 : 0
-  dashboard_name = join(module.context.delimiter, ["cis", "benchmark", "statistics", "combined"])
+  dashboard_name = var.dashboard_name_override == null ? "${module.aws_cloudwatch_dashboard_label.id}-combined" : var.dashboard_name_override
   # https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Dashboard-Body-Structure.html#CloudWatch-Dashboard-Properties-Metrics-Array-Format
   dashboard_body = jsonencode({
     widgets = [
@@ -78,7 +84,7 @@ locals {
 
 resource "aws_cloudwatch_dashboard" "individual" {
   count          = local.enabled && var.dashboard_enabled ? 1 : 0
-  dashboard_name = join(module.context.delimiter, ["cis", "benchmark", "statistics", "individual"])
+  dashboard_name = var.dashboard_name_override == null ? "${module.aws_cloudwatch_dashboard_label.id}-individual" : var.dashboard_name_override
 
   dashboard_body = jsonencode({
     widgets = [

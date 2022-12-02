@@ -60,13 +60,11 @@ data "aws_iam_policy_document" "sns_kms_key_policy" {
 module "aws_sns_topic_label" {
   source  = "app.terraform.io/SevenPico/context/null"
   version = "1.0.2"
-
-  attributes = ["cloudtrail-breach"]
-  context    = module.context.self
+  context = module.context.self
 }
 
 resource "aws_sns_topic" "default" {
-  count             = local.enabled ? 1 : 0
+  count             = local.enabled == true && var.sns_topic_enabled == true ? 1 : 0
   name              = module.aws_sns_topic_label.id
   tags              = module.context.tags
   kms_master_key_id = local.create_kms_key ? module.sns_kms_key[0].key_id : var.kms_master_key_id

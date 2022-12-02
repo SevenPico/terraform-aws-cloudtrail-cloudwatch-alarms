@@ -11,8 +11,13 @@ variable "create_kms_key" {
 
 variable "sns_topic_arn" {
   description = "An SNS topic ARN that has already been created. Its policy must already allow access from CloudWatch Alarms, or set `add_sns_policy` to `true`"
-  default     = null
   type        = string
+  default     = null
+}
+
+variable "sns_topic_enabled" {
+  type    = bool
+  default = false
 }
 
 variable "sns_policy_enabled" {
@@ -72,4 +77,9 @@ variable "metrics" {
   }))
   default     = {}
   description = "The cloudwatch metrics and corresponding alarm definitions"
+}
+
+variable "dashboard_name_override" {
+  type    = string
+  default = null
 }
