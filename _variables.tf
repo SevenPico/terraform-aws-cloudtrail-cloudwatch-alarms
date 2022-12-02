@@ -16,8 +16,8 @@ variable "sns_topic_arn" {
 }
 
 variable "sns_topic_enabled" {
-   type        = bool
-   default     = false
+  type    = bool
+  default = false
 }
 
 variable "sns_policy_enabled" {
@@ -80,6 +80,6 @@ variable "metrics" {
 }
 
 variable "dashboard_name_override" {
-  type = string
+  type    = string
   default = null
 }
