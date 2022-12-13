@@ -4,16 +4,13 @@ module "sns_kms_key_label" {
   source  = "app.terraform.io/SevenPico/context/null"
   version = "1.0.2"
   count   = var.create_kms_key ? 1 : 0
-
-  attributes = ["sns"]
-  context    = module.context.self
+  context = module.context.self
 }
 
 module "sns_kms_key" {
   source  = "app.terraform.io/SevenPico/kms-key/aws"
   version = "0.12.1"
-  count   = var.create_kms_key ? 1 : 0
-  context = module.context.self
+  context = module.sns_kms_key_label.self
 
   name                = local.create_kms_key ? module.sns_kms_key_label[0].id : ""
   description         = "KMS key for the ${local.alert_for} SNS topic"
@@ -64,17 +61,18 @@ module "aws_sns_topic_label" {
 }
 
 resource "aws_sns_topic" "default" {
-  count             = local.enabled == true && var.sns_topic_enabled == true ? 1 : 0
+  count             = local.enabled && var.sns_topic_enabled ? 1 : 0
   name              = module.aws_sns_topic_label.id
   tags              = module.context.tags
   kms_master_key_id = local.create_kms_key ? module.sns_kms_key[0].key_id : var.kms_master_key_id
 }
 
 resource "aws_sns_topic_policy" "default" {
-  count  = local.enabled == true && var.sns_policy_enabled == true ? 1 : 0
+  count  = local.enabled && var.sns_policy_enabled && var.sns_topic_enabled ? 1 : 0
   arn    = local.sns_topic_arn
   policy = data.aws_iam_policy_document.sns_topic_policy.json
 }
+
 data "aws_iam_policy_document" "sns_topic_policy" {
   policy_id = "__default_policy_ID"
 
