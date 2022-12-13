@@ -9,7 +9,7 @@ module "sns_kms_key_label" {
 
 module "sns_kms_key" {
   source  = "app.terraform.io/SevenPico/kms-key/aws"
-  version = "0.12.1"
+  version = "0.12.1.2"
   count   = var.create_kms_key ? 1 : 0
   context = module.context.self
 
