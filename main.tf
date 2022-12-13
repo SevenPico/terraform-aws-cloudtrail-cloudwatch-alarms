@@ -13,7 +13,7 @@ module "sns_kms_key" {
   count   = var.create_kms_key ? 1 : 0
   context = module.context.self
 
-  name                = local.create_kms_key ? module.sns_kms_key_label[0].id : ""
+  name                = var.create_kms_key ? module.sns_kms_key_label[0].id : ""
   description         = "KMS key for the ${local.alert_for} SNS topic"
   enable_key_rotation = true
   alias               = "alias/${local.alert_for}-sns"
