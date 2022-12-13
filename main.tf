@@ -10,7 +10,8 @@ module "sns_kms_key_label" {
 module "sns_kms_key" {
   source  = "app.terraform.io/SevenPico/kms-key/aws"
   version = "0.12.1"
-  context = module.sns_kms_key_label.self
+  count   = var.create_kms_key ? 1 : 0
+  context = module.context.self
 
   name                = local.create_kms_key ? module.sns_kms_key_label[0].id : ""
   description         = "KMS key for the ${local.alert_for} SNS topic"
