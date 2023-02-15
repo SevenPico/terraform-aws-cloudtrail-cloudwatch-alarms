@@ -22,7 +22,7 @@
 ## ----------------------------------------------------------------------------
 
 #
-# ONLY EDIT THIS FILE IN github.com/cloudposse/terraform-null-label
+# ONLY EDIT THIS FILE IN github.com/SevenPico/terraform-null-context
 # All other instances of this file should be a copy of that one
 #
 #
@@ -44,8 +44,8 @@
 #
 
 module "context" {
-  source  = "app.terraform.io/SevenPico/context/null"
-  version = "1.0.2" # requires Terraform >= 0.13.0
+  source  = "SevenPico/context/null"
+  version = "2.0.0" # requires Terraform >= 0.13.0
 
   enabled             = var.enabled
   namespace           = var.namespace

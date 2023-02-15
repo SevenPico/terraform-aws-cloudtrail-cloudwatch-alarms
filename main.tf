@@ -1,15 +1,15 @@
 data "aws_caller_identity" "default" {}
 
 module "sns_kms_key_label" {
-  source  = "app.terraform.io/SevenPico/context/null"
-  version = "1.0.2"
+  source  = "SevenPico/context/null"
+  version = "2.0.0"
   count   = var.create_kms_key ? 1 : 0
   context = module.context.self
 }
 
 module "sns_kms_key" {
-  source  = "app.terraform.io/SevenPico/kms-key/aws"
-  version = "0.12.1.2"
+  source  = "SevenPicoForks/kms-key/aws"
+  version = "2.0.0"
   count   = var.create_kms_key ? 1 : 0
   context = module.context.self
 
@@ -56,8 +56,8 @@ data "aws_iam_policy_document" "sns_kms_key_policy" {
 }
 
 module "aws_sns_topic_label" {
-  source  = "app.terraform.io/SevenPico/context/null"
-  version = "1.0.2"
+  source  = "SevenPico/context/null"
+  version = "2.0.0"
   context = module.context.self
 }
 

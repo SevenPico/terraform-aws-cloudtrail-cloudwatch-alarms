@@ -1,6 +1,3 @@
-variable "region" {
-  type = string
-}
 
 variable "metrics_paths" {
   type        = list(string)

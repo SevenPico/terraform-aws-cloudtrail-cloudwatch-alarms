@@ -22,7 +22,7 @@
 ## ----------------------------------------------------------------------------
 
 #
-# ONLY EDIT THIS FILE IN github.com/cloudposse/terraform-null-label
+# ONLY EDIT THIS FILE IN github.com/SevenPico/terraform-null-context
 # All other instances of this file should be a copy of that one
 #
 #
@@ -43,13 +43,15 @@
 # will be null, and `module.this.delimiter` will be `-` (hyphen).
 #
 
-module "this" {
-  source  = "cloudposse/label/null"
-  version = "0.25.0" # requires Terraform >= 0.13.0
+module "context" {
+  source  = "SevenPico/context/null"
+  version = "2.0.0" # requires Terraform >= 0.13.0
 
   enabled             = var.enabled
   namespace           = var.namespace
   tenant              = var.tenant
+  project             = var.project
+  region              = var.region
   environment         = var.environment
   stage               = var.stage
   name                = var.name
@@ -64,6 +66,7 @@ module "this" {
   label_value_case    = var.label_value_case
   descriptor_formats  = var.descriptor_formats
   labels_as_tags      = var.labels_as_tags
+  domain_name         = var.domain_name
 
   context = var.context
 }
@@ -76,6 +79,8 @@ variable "context" {
     enabled             = true
     namespace           = null
     tenant              = null
+    project             = null
+    region              = null
     environment         = null
     stage               = null
     name                = null
@@ -89,6 +94,8 @@ variable "context" {
     label_key_case      = null
     label_value_case    = null
     descriptor_formats  = {}
+    domain_name         = null
+    dns_name_format     = null
     # Note: we have to use [] instead of null for unset lists due to
     # https://github.com/hashicorp/terraform/issues/28137
     # which was not fixed until Terraform 1.0.0,
@@ -133,6 +140,18 @@ variable "tenant" {
   type        = string
   default     = null
   description = "ID element _(Rarely used, not included by default)_. A customer identifier, indicating who this instance of a resource is for"
+}
+
+variable "region" {
+  type        = string
+  default     = null
+  description = "region"
+}
+
+variable "project" {
+  type        = string
+  default     = null
+  description = "project name"
 }
 
 variable "environment" {
@@ -299,4 +318,16 @@ variable "descriptor_formats" {
     EOT
 }
 
-#### End of copy of cloudposse/terraform-null-label/variables.tf
+variable "domain_name" {
+  type        = string
+  default     = null
+  description = "Route53 Zone domain name."
+}
+
+variable "dns_name_format" {
+  type        = string
+  default     = null
+  description = "Format string for dns_name output.  Default is $${name}.$${domain_name}."
+}
+
+output "self" { value = module.context.self }
