@@ -12,12 +12,12 @@ module "cloudtrail_s3_bucket" {
 
   force_destroy = true
 
-  context = module.this.context
+  context = module.context.legacy
 }
 
 resource "aws_cloudwatch_log_group" "default" {
-  name              = module.this.id
-  tags              = module.this.tags
+  name              = module.context.id
+  tags              = module.context.tags
   retention_in_days = 90
 }
 
@@ -44,13 +44,13 @@ data "aws_iam_policy_document" "assume_policy" {
 }
 
 resource "aws_iam_role" "cloudtrail_cloudwatch_events_role" {
-  name               = lower(join(module.this.delimiter, [module.this.id, "role"]))
+  name               = lower(join(module.context.delimiter, [module.context.id, "role"]))
   assume_role_policy = data.aws_iam_policy_document.assume_policy.json
-  tags               = module.this.tags
+  tags               = module.context.tags
 }
 
 resource "aws_iam_role_policy" "policy" {
-  name   = lower(join(module.this.delimiter, [module.this.id, "policy"]))
+  name   = lower(join(module.context.delimiter, [module.context.id, "policy"]))
   policy = data.aws_iam_policy_document.log_policy.json
   role   = aws_iam_role.cloudtrail_cloudwatch_events_role.id
 }
@@ -62,7 +62,7 @@ module "metric_configs" {
   map_config_local_base_path = path.module
   map_config_paths           = var.metrics_paths
 
-  context = module.this.context
+  context = module.context.legacy
 }
 
 module "cloudtrail" {
@@ -78,7 +78,7 @@ module "cloudtrail" {
   cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.default.arn}:*"
   cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_cloudwatch_events_role.arn
 
-  context = module.this.context
+  context = module.context.legacy
 }
 
 ## This is the module being used
